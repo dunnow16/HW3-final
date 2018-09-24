@@ -8,11 +8,11 @@
 
 import UIKit
 
-class CalcViewController: UIViewController {
+class CalcViewController: UIViewController, MyProtocol {
 
     var mode: String? = CalculatorMode.Length.rawValue  // initialize to length
     var u1: String?, u2: String?  // the two units: top, bottom
-    // setting screen's delegate here? what?
+    var modeHold: Int = 1
     
     @IBOutlet weak var topInput: DecimalMinusTextField!
     @IBOutlet weak var bottomInput: DecimalMinusTextField!
@@ -115,10 +115,12 @@ class CalcViewController: UIViewController {
     // Toggle between length and volume conversions.
     @IBAction func modeBtnPressed(_ sender: Any) {
         if mode! == CalculatorMode.Length.rawValue {
+            modeHold = 2
             mode = CalculatorMode.Volume.rawValue
             topUnit.text = VolumeUnit.Gallons.rawValue
             bottomUnit.text = VolumeUnit.Liters.rawValue
         } else if mode! == CalculatorMode.Volume.rawValue {
+            modeHold = 1
             mode = CalculatorMode.Length.rawValue
             topUnit.text = LengthUnit.Yards.rawValue
             bottomUnit.text = LengthUnit.Meters.rawValue
@@ -137,11 +139,16 @@ class CalcViewController: UIViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "segueToSettings" {
             if let destVC = segue.destination.childViewControllers[0] as? SettingsViewController {
-                //destVC.
+                destVC.modeControl = modeHold
+                destVC.myProtocol = self
             }
         }
     }
-    
+    func setLabels(fLabel: String, tLabel: String){
+        topUnit.text = fLabel
+        bottomUnit.text = tLabel
+    }
+
 }
 
 extension CalcViewController : UITextFieldDelegate {
